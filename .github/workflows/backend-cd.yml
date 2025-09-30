@@ -38,10 +38,25 @@ jobs:
       - name: Set Kubernetes context (get AKS credentials)
         run: |
           az aks get-credentials --resource-group ${{ github.event.inputs.aks_resource_group }} --name ${{ github.event.inputs.aks_cluster_name }} --overwrite-existing
-
-      - name: Attach ACR
+      
+      - name: Ensure namespace exists
         run: |
-          az aks update --name ${{ github.event.inputs.aks_cluster_name }} --resource-group ${{ github.event.inputs.aks_resource_group }} --attach-acr ${{ github.event.inputs.aks_acr_name }}
+          kubectl create namespace sit722 --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create/refresh imagePullSecret (acr-auth)
+        run: |
+          kubectl delete secret acr-auth -n sit722 --ignore-not-found
+          kubectl create secret docker-registry acr-auth \
+            --namespace sit722 \
+            --docker-server=${{ secrets.AZURE_CONTAINER_REGISTRY }} \
+            --docker-username=${{ secrets.AZURE_CONTAINER_REGISTRY_NAME }} \
+            --docker-password='${{ secrets.ACR_PASSWORD }}' \
+            --docker-email="devnull@example.local"
+          kubectl get secret acr-auth -n sit722
+
+#      - name: Attach ACR
+#        run: |
+#          az aks update --name ${{ github.event.inputs.aks_cluster_name }} --resource-group ${{ github.event.inputs.aks_resource_group }} --attach-acr ${{ github.event.inputs.aks_acr_name }}
 
       - name: Deploy Backend Infrastructure (Namespace, ConfigMaps, Secrets, Databases)
         run: |
