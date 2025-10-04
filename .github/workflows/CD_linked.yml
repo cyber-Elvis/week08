@@ -4,7 +4,12 @@ name: CD - Deploy Backend then Frontend to AKS
 on:
   push:
     branches: [ main ]
-
+    paths:
+          - 'k8s/**'
+          - 'backend/**'
+          - 'frontend/**'
+          - '.github/workflows/CD_linked.yml'
+          
 permissions:
   id-token: write
   contents: read
