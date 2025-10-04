@@ -1,4 +1,4 @@
-# .github/workflows/cd_linked.yml
+## .github/workflows/cd_linked.yml
 name: CD - Deploy Backend then Frontend to AKS
 
 on:
@@ -9,7 +9,7 @@ on:
           - 'backend/**'
           - 'frontend/**'
           - '.github/workflows/CD_linked.yml'
-          
+
 permissions:
   id-token: write
   contents: read

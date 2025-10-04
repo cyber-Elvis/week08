@@ -112,7 +112,7 @@ jobs:
         run: |
           pytest tests --maxfail=1 --disable-warnings -q
 
-  # Job 2: Build and Push Docker Images (runs only if tests pass)
+  ## Job 2: Build and Push Docker Images (runs only if tests pass)
   build_and_push_images:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
     runs-on: ubuntu-latest
