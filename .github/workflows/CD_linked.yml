@@ -92,9 +92,13 @@ jobs:
           test -f "$FILE" || { echo "Missing $FILE"; exit 1; }
           grep -q "_PRODUCT_API_URL_" "$FILE" || { echo "PRODUCT placeholder missing"; exit 1; }
           grep -q "_ORDER_API_URL_"   "$FILE" || { echo "ORDER placeholder missing"; exit 1; }
+          cp "$FILE" "${FILE}.before"
+
           sed -i "s|_PRODUCT_API_URL_|http://${PRODUCT_IP}:${PRODUCT_PORT}|g" "$FILE"
           sed -i "s|_ORDER_API_URL_|http://${ORDER_IP}:${ORDER_PORT}|g"       "$FILE"
-          sed -n '1,25p' "$FILE"
+
+          echo "Diff (context=0, only changed lines):"
+          diff -u --strip-trailing-cr --label before "${FILE}.before" --label after "$FILE" | sed -n '1,120p' || true
 
       - name: Build & push frontend
         run: |
